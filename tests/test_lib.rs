@@ -1,6 +1,6 @@
 use linfa::dataset::Records;
 use linfa::prelude::Predict;
-use mlops_rust::{download_dataset, read_dataset, train_model};
+use mlops_rust::model::{download_dataset, read_dataset, train_model, FEATURE_NAMES};
 use ndarray::arr1;
 
 #[test]
@@ -13,17 +13,16 @@ fn test_download_dataset() {
 
 #[test]
 fn test_read_dataset() {
-    let result = read_dataset("tests/test.csv", &["feature"], "target");
+    let result = read_dataset("tests/test.csv");
     assert!(result.nsamples() == 2);
-    assert!(result.nfeatures() == 1);
+    assert!(result.nfeatures() == 4);
     assert!(result.ntargets() == 1);
-    assert!(result.feature_names().len() == 1);
-    assert!(result.feature_names()[0] == "feature");
+    assert!(result.feature_names() == FEATURE_NAMES);
 }
 
 #[test]
 fn test_train_model() {
-    let dataset = read_dataset("tests/test.csv", &["feature"], "target");
+    let dataset = read_dataset("tests/test.csv");
     let model = train_model(&dataset);
     let pred = model.predict(&dataset);
     assert_eq!(pred, arr1(&["test", "protest"]));
