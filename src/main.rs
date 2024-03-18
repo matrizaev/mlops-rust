@@ -1,46 +1,8 @@
-use std::path::PathBuf;
-
-use hf_hub::api::sync::ApiError;
 use linfa::prelude::*;
-use linfa_logistic::MultiLogisticRegression;
-use ndarray::{ArrayBase, Dim, OwnedRepr};
-use polars::prelude::*;
+
 // use rand::*;
 
-fn download_dataset(repo: &str, name: &str) -> Result<PathBuf, ApiError> {
-    let api = hf_hub::api::sync::Api::new().unwrap();
-    api.dataset(String::from(repo)).get(name)
-}
-
-fn read_dataset(
-    path: &str,
-    feature_names: &[&str],
-    target_name: &str,
-) -> DatasetBase<
-    ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
-    ArrayBase<OwnedRepr<String>, Dim<[usize; 1]>>,
-> {
-    let df = CsvReader::from_path(path).unwrap().finish().unwrap();
-
-    let x_train = df
-        .select(feature_names)
-        .unwrap()
-        .clone()
-        .to_ndarray::<Float64Type>(IndexOrder::C)
-        .unwrap();
-
-    let y_train: Vec<String> = df
-        .column(target_name)
-        .unwrap()
-        .clone()
-        .str()
-        .unwrap()
-        .into_iter()
-        .filter_map(|opt_str| opt_str.map(|s| s.to_string()))
-        .collect();
-
-    Dataset::new(x_train, y_train.into()).with_feature_names(feature_names.to_vec())
-}
+use mlops_rust::{download_dataset, read_dataset, train_model};
 
 pub fn main() {
     let path = download_dataset("scikit-learn/iris", "Iris.csv").unwrap();
@@ -67,11 +29,7 @@ pub fn main() {
         train.nsamples()
     );
 
-    // fit a Logistic regression model with 150 max iterations
-    let model = MultiLogisticRegression::default()
-        .max_iterations(50)
-        .fit(&train)
-        .unwrap();
+    let model = train_model(&train);
 
     // // predict and map targets
     let pred = model.predict(&valid);
