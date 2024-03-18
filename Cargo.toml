@@ -8,11 +8,13 @@ edition = "2021"
 [dependencies]
 clap = {version="4.5.1", features=["derive"]}
 hf-hub = "0.3.2"
-linfa = "0.7.0"
-linfa-logistic = "0.7.0"
+linfa = {version="0.7.0", features=["serde"]}
+linfa-logistic = {version="0.7.0", features=["serde"]}
 ndarray = "0.15.6"
 polars = {version="0.38.2", features=["polars-ops", "to_dummies", "ndarray"]}
 polars-core = "0.38.2"
 polars-io = "0.38.2"
 rand = "0.8.5"
+serde = "1.0.197"
+serde-pickle = "1.1.1"
 sqlite = "0.33.0"

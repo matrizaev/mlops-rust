@@ -11,6 +11,8 @@ type CustomDatasetType = DatasetBase<
     ArrayBase<OwnedRepr<String>, Dim<[usize; 1]>>,
 >;
 
+type CustomTrainedModel = MultiFittedLogisticRegression<f64, String>;
+
 pub fn download_dataset(repo: &str, name: &str) -> Result<PathBuf, ApiError> {
     let api = hf_hub::api::sync::Api::new().unwrap();
     api.dataset(String::from(repo)).get(name)
@@ -39,12 +41,20 @@ pub fn read_dataset(path: &str, feature_names: &[&str], target_name: &str) -> Cu
     Dataset::new(x_train, y_train.into()).with_feature_names(feature_names.to_vec())
 }
 
-pub fn train_model(
-    dataset: &CustomDatasetType,
-) -> MultiFittedLogisticRegression<f64, std::string::String> {
+pub fn train_model(dataset: &CustomDatasetType) -> CustomTrainedModel {
     // fit a Logistic regression model with 150 max iterations
     MultiLogisticRegression::default()
         .max_iterations(50)
         .fit(dataset)
         .unwrap()
+}
+
+pub fn save_model(model: &CustomTrainedModel, path: &str) {
+    let serialized = serde_pickle::to_vec(model, Default::default()).unwrap();
+    std::fs::write(path, serialized).unwrap();
+}
+
+pub fn load_model(path: &str) -> CustomTrainedModel {
+    let serialized = std::fs::read(path).unwrap();
+    serde_pickle::from_slice(&serialized, Default::default()).unwrap()
 }

@@ -2,7 +2,7 @@ use linfa::prelude::*;
 
 // use rand::*;
 
-use mlops_rust::{download_dataset, read_dataset, train_model};
+use mlops_rust::{download_dataset, load_model, read_dataset, save_model, train_model};
 
 pub fn main() {
     let path = download_dataset("scikit-learn/iris", "Iris.csv").unwrap();
@@ -30,6 +30,11 @@ pub fn main() {
     );
 
     let model = train_model(&train);
+
+    save_model(&model, "model.pkl");
+    println!("Model saved to model.pkl");
+    let model = load_model("model.pkl");
+    println!("Model loaded from model.pkl");
 
     // // predict and map targets
     let pred = model.predict(&valid);
