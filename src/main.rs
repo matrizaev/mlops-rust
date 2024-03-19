@@ -35,7 +35,6 @@ enum Commands {
 }
 
 pub fn main() {
-    test_python().expect("Could not run Python code");
     let cli = Cli::parse();
 
     println!("Model path: {:?}", cli.model_path);
