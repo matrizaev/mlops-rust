@@ -1,0 +1,5 @@
+model_path: model.pkl
+bind_address: "0.0.0.0:8080"
+mlflow_tracking_uri: "http://0.0.0.0:5000"
+mlflow_experiment_name: "mlflow-rust"
+mlflow_run_name: "mlflow-rust"

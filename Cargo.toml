@@ -8,16 +8,18 @@ edition = "2021"
 [dependencies]
 actix-web = "4.5.1"
 clap = {version="4.5.1", features=["derive"]}
+config = { version = "0.14.0", features = ["yaml"] }
 hf-hub = "0.3.2"
 linfa = {version="0.7.0", features=["serde"]}
 linfa-logistic = {version="0.7.0", features=["serde"]}
+mlflow_rs = "0.1.0"
 ndarray = "0.15.6"
 polars = {version="0.38.2", features=["polars-ops", "to_dummies", "ndarray", "json"]}
 polars-core = "0.38.2"
 polars-io = "0.38.2"
-pyo3 = { version = "0.20.3", features = ["auto-initialize"] }
 rand = "0.8.5"
 serde = "1.0.197"
 serde-pickle = "1.1.1"
+serde_derive = "1.0.197"
 serde_json = "1.0.114"
 sqlite = "0.33.0"

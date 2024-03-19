@@ -1,16 +1,7 @@
 use crate::model::{json_to_ndarray, load_model, CustomTrainedModel};
-use crate::web::web::Data;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::web::Data;
+use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use linfa::prelude::*;
-use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, Debug)]
-struct PredictionPayload {
-    SepalLengthCm: f64,
-    SepalWidthCm: f64,
-    PetalLengthCm: f64,
-    PetalWidthCm: f64,
-}
 
 //create a function that returns a hello world
 #[get("/")]
@@ -26,16 +17,16 @@ async fn health() -> impl Responder {
 
 //create a post function that runs the model and returns the prediction
 #[post("/predict")]
-async fn predict(
-    data: Data<CustomTrainedModel>,
-    payload: web::Json<PredictionPayload>,
-) -> impl Responder {
+async fn predict(data: Data<CustomTrainedModel>, text: String) -> impl Responder {
     let model = data.as_ref();
-    let json_value = serde_json::to_string(&payload).unwrap();
-    let features_ndarray = json_to_ndarray(&json_value).unwrap();
-    let pred = model.predict(&features_ndarray);
-    let str = serde_json::to_string(&pred).unwrap();
-    HttpResponse::Ok().body(str)
+    match json_to_ndarray(&text) {
+        Ok(features) => {
+            let pred = model.predict(&features);
+            let str = serde_json::to_string(&pred).unwrap();
+            HttpResponse::Ok().body(str)
+        }
+        Err(e) => HttpResponse::BadRequest().body(e.to_string()),
+    }
 }
 
 //create a function that returns the version of the service
@@ -47,7 +38,7 @@ async fn version() -> impl Responder {
 }
 
 #[actix_web::main]
-pub async fn serve(model_path: &str, bind_address: &Option<String>) -> std::io::Result<()> {
+pub async fn serve(model_path: &str, bind_address: Option<&str>) -> std::io::Result<()> {
     //add a print message to the console that the service is running
     println!("Running the service");
     let model = load_model(model_path);
