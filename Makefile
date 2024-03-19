@@ -8,7 +8,7 @@ test:
 	cargo test --quiet
 
 run:
-	cargo run 
+	cargo run $(ARGS)
 
 docker:
 	docker build . -t mlops-rust --build-arg model.pkl

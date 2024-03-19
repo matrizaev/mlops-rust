@@ -29,7 +29,6 @@ struct Settings {
     bind_address: String,
     mlflow_tracking_uri: String,
     mlflow_experiment_name: String,
-    mlflow_run_name: String,
 }
 
 pub fn main() {
@@ -59,7 +58,6 @@ pub fn main() {
                 &dataset,
                 &settings.mlflow_tracking_uri,
                 &settings.mlflow_experiment_name,
-                Some(&settings.mlflow_run_name),
             )
             .expect("Unsuccessful training attempt.");
         }

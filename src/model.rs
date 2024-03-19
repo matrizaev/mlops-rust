@@ -8,7 +8,7 @@ use ndarray::{ArrayBase, Dim, OwnedRepr};
 use polars::prelude::*;
 use std::io::Cursor;
 
-use mlflow_rs::{experiment::Experiment, run::Status};
+use mlflow::{timestamp, Client};
 
 type CustomDatasetType = DatasetBase<
     ArrayBase<OwnedRepr<f64>, Dim<[usize; 2]>>,
@@ -59,21 +59,31 @@ pub fn train_track_model(
     dataset: &CustomDatasetType,
     mlflow_tracking_uri: &str,
     mlflow_experiment_name: &str,
-    mlflow_run_name: Option<&str>,
 ) -> Result<(), Box<dyn Error>> {
     println!(
         "Fit Multinomial Logistic Regression classifier with #{} training points",
         dataset.nsamples()
     );
 
-    let experiment = Experiment::new(mlflow_tracking_uri, mlflow_experiment_name)?;
-    let mut run = experiment.create_run(mlflow_run_name, vec![])?;
+    let client = Client::for_server(mlflow_tracking_uri);
+
+    let experiment = match client
+        .get_experiment(mlflow_experiment_name)
+        .or_else(|| client.create_experiment(mlflow_experiment_name))
+    {
+        Some(experiment) => experiment,
+        None => panic!("Error: Could not create experiment."),
+    };
+
+    let run = experiment.create_run();
 
     let model = train_model(dataset)?;
     let pred = model.predict(dataset);
     let cm = pred.confusion_matrix(dataset)?;
-    run.log_metric("accuraccy", cm.accuracy(), Some(0))?;
-    run.end_run(Status::Finished)?;
+
+    run.log_metric("accuraccy", cm.accuracy().into(), timestamp(), 0);
+
+    run.terminate();
     Ok(())
 }
 

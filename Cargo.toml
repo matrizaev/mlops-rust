@@ -12,7 +12,7 @@ config = { version = "0.14.0", features = ["yaml"] }
 hf-hub = "0.3.2"
 linfa = {version="0.7.0", features=["serde"]}
 linfa-logistic = {version="0.7.0", features=["serde"]}
-mlflow_rs = "0.1.0"
+mlflow = "0.1.0"
 ndarray = "0.15.6"
 polars = {version="0.38.2", features=["polars-ops", "to_dummies", "ndarray", "json"]}
 polars-core = "0.38.2"

@@ -23,7 +23,7 @@ fn test_read_dataset() {
 #[test]
 fn test_train_model() {
     let dataset = read_dataset("tests/test.csv");
-    let model = train_model(&dataset);
+    let model = train_model(&dataset).unwrap();
     let pred = model.predict(&dataset);
     assert_eq!(pred, arr1(&["test", "protest"]));
 }
