@@ -6,7 +6,6 @@ use linfa::prelude::*;
 use mlops_rust::model::{
     download_dataset, json_to_ndarray, load_model, read_dataset, save_model, train_model,
 };
-
 use mlops_rust::web::serve;
 
 #[derive(Parser)]
@@ -36,6 +35,7 @@ enum Commands {
 }
 
 pub fn main() {
+    test_python().expect("Could not run Python code");
     let cli = Cli::parse();
 
     println!("Model path: {:?}", cli.model_path);

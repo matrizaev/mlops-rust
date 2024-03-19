@@ -15,6 +15,7 @@ ndarray = "0.15.6"
 polars = {version="0.38.2", features=["polars-ops", "to_dummies", "ndarray", "json"]}
 polars-core = "0.38.2"
 polars-io = "0.38.2"
+pyo3 = { version = "0.20.3", features = ["auto-initialize"] }
 rand = "0.8.5"
 serde = "1.0.197"
 serde-pickle = "1.1.1"

@@ -5,6 +5,8 @@ use linfa::prelude::*;
 use linfa_logistic::{MultiFittedLogisticRegression, MultiLogisticRegression};
 use ndarray::{ArrayBase, Dim, OwnedRepr};
 use polars::prelude::*;
+use pyo3::prelude::*;
+use pyo3::types::IntoPyDict;
 use std::io::Cursor;
 
 type CustomDatasetType = DatasetBase<
@@ -50,6 +52,22 @@ pub fn read_dataset(path: &str) -> CustomDatasetType {
         .collect();
 
     Dataset::new(x_train, y_train.into()).with_feature_names(FEATURE_NAMES.to_vec())
+}
+
+fn mlflow_tracked_running() -> PyResult<()> {
+    // add some Python code to wrap the model training process with MLflow tracking
+
+    Python::with_gil(|py| {
+        let sys = py.import("sys")?;
+        let version: String = sys.getattr("version")?.extract()?;
+
+        let locals = [("os", py.import("os")?)].into_py_dict(py);
+        let code = "os.getenv('USER') or os.getenv('USERNAME') or 'Unknown'";
+        let user: String = py.eval(code, None, Some(&locals))?.extract()?;
+
+        println!("Hello {}, I'm Python {}", user, version);
+        Ok(())
+    })
 }
 
 pub fn train_model(dataset: &CustomDatasetType) -> CustomTrainedModel {
