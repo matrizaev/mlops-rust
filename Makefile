@@ -11,7 +11,7 @@ run:
 	cargo run $(ARGS)
 
 docker:
-	docker build . -t mlops-rust --build-arg model.pkl
+	docker build . -t mlops-rust
 
 docker-run:
 	docker run -d -p8080:8080 mlops-rust
