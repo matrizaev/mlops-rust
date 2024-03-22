@@ -1,6 +1,7 @@
 use crate::model::{json_to_ndarray, load_model, CustomTrainedModel};
 use actix_web::web::Data;
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::middleware::Logger;
 use linfa::prelude::*;
 
 //create a function that returns a hello world
@@ -43,9 +44,11 @@ pub async fn serve(model_path: &str, bind_address: Option<&str>) -> std::io::Res
     println!("Running the service");
     let model = load_model(model_path);
     let data = Data::new(model);
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     let service = HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
+            .wrap(Logger::default())
             .service(hello)
             .service(health)
             .service(version)
